@@ -25,7 +25,6 @@
 package org.spongepowered.common.command;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.spongepowered.api.command.CommandMessageFormatting.error;
 import static org.spongepowered.api.util.SpongeApiTranslationHelper.t;
 
 import com.google.common.collect.HashMultimap;
@@ -35,7 +34,7 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Singleton;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
@@ -44,7 +43,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.InvocationCommandException;
 import org.spongepowered.api.command.dispatcher.Disambiguator;
-import org.spongepowered.api.command.dispatcher.SimpleDispatcher;
 import org.spongepowered.api.event.CauseStackManager.StackFrame;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.command.SendCommandEvent;
@@ -89,7 +87,7 @@ public class SpongeCommandManager implements CommandManager {
 
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
     private final Logger logger;
-    private final SimpleDispatcher dispatcher;
+    private final SpongeDispatcher dispatcher;
     private final Multimap<PluginContainer, CommandMapping> owners = HashMultimap.create();
     private final Map<CommandMapping, PluginContainer> reverseOwners = new ConcurrentHashMap<>();
     private final Object lock = new Object();
@@ -101,7 +99,7 @@ public class SpongeCommandManager implements CommandManager {
      */
     @Inject
     public SpongeCommandManager(Logger logger) {
-        this(logger, SimpleDispatcher.FIRST_DISAMBIGUATOR);
+        this(logger, SpongeDispatcher.FIRST_DISAMBIGUATOR);
     }
 
     /**
@@ -112,21 +110,21 @@ public class SpongeCommandManager implements CommandManager {
      */
     public SpongeCommandManager(Logger logger, Disambiguator disambiguator) {
         this.logger = logger;
-        this.dispatcher = new SimpleDispatcher(disambiguator);
+        this.dispatcher = new SpongeDispatcher(disambiguator);
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, CommandCallable callable, String... alias) {
+    public Optional<CommandMapping> register(Object plugin, Command callable, String... alias) {
         return register(plugin, callable, Arrays.asList(alias));
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, CommandCallable callable, List<String> aliases) {
+    public Optional<CommandMapping> register(Object plugin, Command callable, List<String> aliases) {
         return register(plugin, callable, aliases, Function.identity());
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, CommandCallable callable, List<String> aliases,
+    public Optional<CommandMapping> register(Object plugin, Command callable, List<String> aliases,
             Function<List<String>, List<String>> callback) {
         checkNotNull(plugin, "plugin");
 
@@ -202,11 +200,7 @@ public class SpongeCommandManager implements CommandManager {
     public Optional<CommandMapping> removeMapping(CommandMapping mapping) {
         synchronized (this.lock) {
             Optional<CommandMapping> removed = this.dispatcher.removeMapping(mapping);
-
-            if (removed.isPresent()) {
-                forgetMapping(removed.get());
-            }
-
+            removed.ifPresent(this::forgetMapping);
             return removed;
         }
     }
@@ -292,7 +286,7 @@ public class SpongeCommandManager implements CommandManager {
     }
 
     @Override
-    public CommandResult process(CommandSource source, String commandLine) {
+    public Result process(CommandSource source, String commandLine) {
         final String[] argSplit = commandLine.split(" ", 2);
         Sponge.getCauseStackManager().pushCause(source);
         final SendCommandEvent event = SpongeEventFactory.createSendCommandEvent(Sponge.getCauseStackManager().getCurrentCause(),
@@ -323,7 +317,7 @@ public class SpongeCommandManager implements CommandManager {
                         .addEntityDropCaptures()
                         .complete());
                 }
-                final CommandResult result = this.dispatcher.process(source, commandLine);
+                final Result result = this.dispatcher.process(source, commandLine);
                 this.completeCommandPhase();
                 return result;
             } catch (InvocationCommandException ex) {
