@@ -34,7 +34,7 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Singleton;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.Command;
+import org.spongepowered.api.command.CommandLowLevel;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
@@ -42,6 +42,7 @@ import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.InvocationCommandException;
+import org.spongepowered.api.command.CommandExecutionResult;
 import org.spongepowered.api.command.dispatcher.Disambiguator;
 import org.spongepowered.api.event.CauseStackManager.StackFrame;
 import org.spongepowered.api.event.SpongeEventFactory;
@@ -114,17 +115,17 @@ public class SpongeCommandManager implements CommandManager {
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, Command callable, String... alias) {
+    public Optional<CommandMapping> register(Object plugin, CommandLowLevel callable, String... alias) {
         return register(plugin, callable, Arrays.asList(alias));
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, Command callable, List<String> aliases) {
+    public Optional<CommandMapping> register(Object plugin, CommandLowLevel callable, List<String> aliases) {
         return register(plugin, callable, aliases, Function.identity());
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, Command callable, List<String> aliases,
+    public Optional<CommandMapping> register(Object plugin, CommandLowLevel callable, List<String> aliases,
             Function<List<String>, List<String>> callback) {
         checkNotNull(plugin, "plugin");
 
@@ -286,7 +287,7 @@ public class SpongeCommandManager implements CommandManager {
     }
 
     @Override
-    public Result process(CommandSource source, String commandLine) {
+    public CommandExecutionResult process(CommandSource source, String commandLine) {
         final String[] argSplit = commandLine.split(" ", 2);
         Sponge.getCauseStackManager().pushCause(source);
         final SendCommandEvent event = SpongeEventFactory.createSendCommandEvent(Sponge.getCauseStackManager().getCurrentCause(),
@@ -317,7 +318,7 @@ public class SpongeCommandManager implements CommandManager {
                         .addEntityDropCaptures()
                         .complete());
                 }
-                final Result result = this.dispatcher.process(source, commandLine);
+                final CommandExecutionResult result = this.dispatcher.process(source, commandLine);
                 this.completeCommandPhase();
                 return result;
             } catch (InvocationCommandException ex) {
