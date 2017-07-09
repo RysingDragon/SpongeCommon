@@ -34,7 +34,7 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Singleton;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandLowLevel;
+import org.spongepowered.api.command.CallableCommand;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
@@ -115,17 +115,17 @@ public class SpongeCommandManager implements CommandManager {
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, CommandLowLevel callable, String... alias) {
+    public Optional<CommandMapping> register(Object plugin, CallableCommand callable, String... alias) {
         return register(plugin, callable, Arrays.asList(alias));
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, CommandLowLevel callable, List<String> aliases) {
+    public Optional<CommandMapping> register(Object plugin, CallableCommand callable, List<String> aliases) {
         return register(plugin, callable, aliases, Function.identity());
     }
 
     @Override
-    public Optional<CommandMapping> register(Object plugin, CommandLowLevel callable, List<String> aliases,
+    public Optional<CommandMapping> register(Object plugin, CallableCommand callable, List<String> aliases,
             Function<List<String>, List<String>> callback) {
         checkNotNull(plugin, "plugin");
 
@@ -140,17 +140,17 @@ public class SpongeCommandManager implements CommandManager {
     }
 
     @Override
-    public Optional<CommandMapping> register(PluginContainer pluginContainer, CommandLowLevel callable, String... alias) {
+    public Optional<CommandMapping> register(PluginContainer pluginContainer, CallableCommand callable, String... alias) {
         return register(pluginContainer, callable, Arrays.asList(alias));
     }
 
     @Override
-    public Optional<CommandMapping> register(PluginContainer pluginContainer, CommandLowLevel callable, List<String> aliases) {
+    public Optional<CommandMapping> register(PluginContainer pluginContainer, CallableCommand callable, List<String> aliases) {
         return register(pluginContainer, callable, aliases, Function.identity());
     }
 
     @Override
-    public Optional<CommandMapping> register(PluginContainer pluginContainer, CommandLowLevel callable, List<String> aliases,
+    public Optional<CommandMapping> register(PluginContainer pluginContainer, CallableCommand callable, List<String> aliases,
             Function<List<String>, List<String>> callback) {
         checkNotNull(pluginContainer, "pluginContainer");
         synchronized (this.lock) {
@@ -302,7 +302,7 @@ public class SpongeCommandManager implements CommandManager {
     }
 
     @Override
-    public Optional<String> getPrimaryAlias(CommandLowLevel command) {
+    public Optional<String> getPrimaryAlias(CallableCommand command) {
         return this.reverseOwners.keySet().stream().filter(x -> x.getCallable() == command).findFirst().map(CommandMapping::getPrimaryAlias);
     }
 
