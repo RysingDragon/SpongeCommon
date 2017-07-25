@@ -68,7 +68,6 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.common.SpongeImpl;
 import org.spongepowered.common.SpongeImplHooks;
 import org.spongepowered.common.block.BlockUtil;
-import org.spongepowered.common.command.ChunkSaveHelper;
 import org.spongepowered.common.config.SpongeConfig;
 import org.spongepowered.common.config.type.DimensionConfig;
 import org.spongepowered.common.config.type.GlobalConfig;
@@ -112,8 +111,8 @@ public class SpongeCommands {
 
     private static final DecimalFormat THREE_DECIMAL_DIGITS_FORMATTER = new DecimalFormat("########0.000");
     private static final Flags FLAGS = Flags.builder().flag("-global", "g")
-            .valueFlag(Parameter.builder().worldProperties().key(Text.of("world")).build(), "-world", "w")
-            .valueFlag(Parameter.builder().dimension().key(Text.of("dimension")).build(), "-dimension", "d")
+            .valueFlag(Parameter.builder().worldProperties().setKey(Text.of("world")).build(), "-world", "w")
+            .valueFlag(Parameter.builder().dimension().setKey(Text.of("dimension")).build(), "-dimension", "d")
             .build();
     /**
      * Create a new instance of the Sponge command structure.
@@ -122,21 +121,21 @@ public class SpongeCommands {
      */
     public static Command createSpongeCommand() {
         return Command.builder()
-                .addChild(getVersionCommand(), "version")
-                .addChild(getBlockInfoCommand(), "blockInfo")
-                .addChild(getEntityInfoCommand(), "entityInfo")
-                .addChild(getAuditCommand(), "audit")
-                .addChild(getHeapCommand(), "heap")
-                .addChild(getPluginsCommand(), "plugins")
-                .addChild(getTimingsCommand(), "timings")
-                .addChild(getWhichCommand(), "which")
-                .addChild(getChunksCommand(), "chunks")
-                .addChild(getConfigCommand(), "config")
-                .addChild(getReloadCommand(), "reload") // TODO: Should these two be subcommands of config, and what is now config be set?
-                .addChild(getSaveCommand(), "save")
-                .addChild(getTpsCommand(), "tps")
-                .description(Text.of("General Sponge command"))
-                .extendedDescription(Text.of("commands:\n", // TODO: Automatically generate from child executors (wait for help system on this)
+                .child(getVersionCommand(), "version")
+                .child(getBlockInfoCommand(), "blockInfo")
+                .child(getEntityInfoCommand(), "entityInfo")
+                .child(getAuditCommand(), "audit")
+                .child(getHeapCommand(), "heap")
+                .child(getPluginsCommand(), "plugins")
+                .child(getTimingsCommand(), "timings")
+                .child(getWhichCommand(), "which")
+                .child(getChunksCommand(), "chunks")
+                .child(getConfigCommand(), "config")
+                .child(getReloadCommand(), "reload") // TODO: Should these two be subcommands of config, and what is now config be set?
+                .child(getSaveCommand(), "save")
+                .child(getTpsCommand(), "tps")
+                .setShortDescription(Text.of("General Sponge command"))
+                .setExtendedDescription(Text.of("commands:\n", // TODO: Automatically generate from child executors (wait for help system on this)
                         INDENT, title("chunks"), LONG_INDENT, "Prints chunk data for a specific dimension or world(s)\n",
                         INDENT, title("conf"), LONG_INDENT, "Configure sponge settings\n",
                         INDENT, title("heap"), LONG_INDENT, "Dump live JVM heap\n",
@@ -224,13 +223,13 @@ public class SpongeCommands {
     private static Command createSpongeChunksCommand() {
         return Command.builder()
                 .parameters(
-                        Parameter.builder().optional().key("dump").literal("dump").build(),
-                        Parameter.builder().optional().key("dump-all").literal("all").build()
+                        Parameter.builder().optional().setKey("dump").literal("dump").build(),
+                        Parameter.builder().optional().setKey("dump-all").literal("all").build()
                 )
-                .flags(FLAGS)
-                .description(Text.of("Print chunk information, optionally dump"))
-                .permission("sponge.command.chunks")
-                .executor(new ConfigUsingExecutor(true) {
+                .setFlags(FLAGS)
+                .setShortDescription(Text.of("Print chunk information, optionally dump"))
+                .setPermission("sponge.command.chunks")
+                .setExecutor(new ConfigUsingExecutor(true) {
                     @Override
                     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
                         CommandResult res = super.execute(src, args);
@@ -294,14 +293,14 @@ public class SpongeCommands {
 
     private static Command createSpongeConfigCommand() {
         return Command.builder()
-                .description(Text.of("Inspect the Sponge config"))
-                .flags(FLAGS)
+                .setShortDescription(Text.of("Inspect the Sponge config"))
+                .setFlags(FLAGS)
                 .parameters(
-                        Parameter.builder().key("key").string().build(),
-                        Parameter.builder().optional().key("value").string().build()
+                        Parameter.builder().setKey("key").string().build(),
+                        Parameter.builder().optional().setKey("value").string().build()
                 )
-                .permission("sponge.command.config")
-                .executor(new ConfigUsingExecutor(false) {
+                .setPermission("sponge.command.config")
+                .setExecutor(new ConfigUsingExecutor(false) {
                     @Override
                     protected Text process(SpongeConfig<?> config, CommandSource source, CommandContext args) throws CommandException {
                         final Optional<String> key = args.getOne("key");
@@ -326,10 +325,10 @@ public class SpongeCommands {
 
     private static Command createSpongeReloadCommand() {
         return Command.builder()
-                .flags(FLAGS)
-                .description(Text.of("Reload the Sponge game"))
-                .permission("sponge.command.reload")
-                .executor(new ConfigUsingExecutor(false) {
+                .setFlags(FLAGS)
+                .setShortDescription(Text.of("Reload the Sponge game"))
+                .setPermission("sponge.command.reload")
+                .setExecutor(new ConfigUsingExecutor(false) {
                     @Override
                     protected Text process(SpongeConfig<?> config, CommandSource source, CommandContext args) throws CommandException {
                         config.reload();
@@ -342,10 +341,10 @@ public class SpongeCommands {
 
     private static Command createSpongeSaveCommand() {
         return Command.builder()
-                .flags(FLAGS)
-                .description(Text.of("Save the configuration"))
-                .permission("sponge.command.save")
-                .executor(new ConfigUsingExecutor(false) {
+                .setFlags(FLAGS)
+                .setShortDescription(Text.of("Save the configuration"))
+                .setPermission("sponge.command.save")
+                .setExecutor(new ConfigUsingExecutor(false) {
                     @Override
                     protected Text process(SpongeConfig<?> config, CommandSource source, CommandContext args) throws CommandException {
                         config.save();
@@ -358,11 +357,11 @@ public class SpongeCommands {
 
     private static Command getTpsCommand() {
         return Command.builder()
-                .flags(FLAGS)
-                .permission("sponge.command.tps")
-                .description(Text.of("Provides TPS (ticks per second) data for loaded worlds."))
-                .parameters(Parameter.builder().optional().worldProperties().key("world").build())
-                .executor((src, args) -> {
+                .setFlags(FLAGS)
+                .setPermission("sponge.command.tps")
+                .setShortDescription(Text.of("Provides TPS (ticks per second) data for loaded worlds."))
+                .parameters(Parameter.builder().optional().worldProperties().setKey("world").build())
+                .setExecutor((src, args) -> {
                     if (args.hasAny("world")) {
                         for (WorldProperties properties : args.<WorldProperties>getAll("world")) {
                             final Optional<World> optWorld = Sponge.getServer().getWorld(properties.getWorldName());
@@ -390,9 +389,9 @@ public class SpongeCommands {
 
     private static Command createSpongeHeapCommand() {
         return Command.builder()
-                .description(Text.of("Generate a dump of the Sponge heap"))
-                .permission("sponge.command.heap")
-                .executor((src, args) -> {
+                .setShortDescription(Text.of("Generate a dump of the Sponge heap"))
+                .setPermission("sponge.command.heap")
+                .setExecutor((src, args) -> {
                     File file = new File(new File(new File("."), "dumps"),
                             "heap-dump-" + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss").format(LocalDateTime.now()) + "-server.hprof");
                     src.sendMessage(Text.of("Writing JVM heap data to: ", file));
@@ -409,9 +408,9 @@ public class SpongeCommands {
 
     private static Command createSpongeVersionCommand() {
         return Command.builder()
-                .description(Text.of("Display Sponge's current version"))
-                .permission("sponge.command.version")
-                .executor((src, args) -> {
+                .setShortDescription(Text.of("Display Sponge's current version"))
+                .setPermission("sponge.command.version")
+                .setExecutor((src, args) -> {
                     Text.Builder builder = Text.builder().append(IMPLEMENTATION_NAME);
 
                     for (PluginContainer container : SpongeImpl.getInternalPlugins()) {
@@ -427,9 +426,9 @@ public class SpongeCommands {
 
     private static Command createSpongeBlockInfoCommand() {
         return Command.builder()
-                .description(Text.of("Display the tracked information of the Block you are looking at."))
-                .permission("sponge.command.blockinfo")
-                .executor((src, args) -> {
+                .setShortDescription(Text.of("Display the tracked information of the Block you are looking at."))
+                .setPermission("sponge.command.blockinfo")
+                .setExecutor((src, args) -> {
                     if (!(src instanceof Player)) {
                         src.sendMessage(Text.of(TextColors.RED, "Players must execute this command!"));
                         return CommandResult.empty();
@@ -456,9 +455,9 @@ public class SpongeCommands {
 
     private static Command createSpongeEntityInfoCommand() {
         return Command.builder()
-                .description(Text.of("Display the tracked information of the Entity you are looking at."))
-                .permission("sponge.command.entityinfo")
-                .executor((src, args) -> {
+                .setShortDescription(Text.of("Display the tracked information of the Entity you are looking at."))
+                .setPermission("sponge.command.entityinfo")
+                .setExecutor((src, args) -> {
                     if (!(src instanceof Player)) {
                         return CommandResult.empty();
                     }
@@ -490,9 +489,9 @@ public class SpongeCommands {
 
     private static Command createSpongeAuditCommand() {
         return Command.builder()
-                .description(Text.of("Audit Mixin classes for implementation"))
-                .permission("sponge.command.audit")
-                .executor((src, args) -> {
+                .setShortDescription(Text.of("Audit Mixin classes for implementation"))
+                .setPermission("sponge.command.audit")
+                .setExecutor((src, args) -> {
                     MixinEnvironment.getCurrentEnvironment().audit();
                     return CommandResult.empty();
                 })
@@ -509,13 +508,13 @@ public class SpongeCommands {
 
     private static Command createSpongePluginsCommand() {
         return Command.builder()
-                .description(Text.of("List currently installed plugins"))
-                .permission("sponge.command.plugins")
+                .setShortDescription(Text.of("List currently installed plugins"))
+                .setPermission("sponge.command.plugins")
                 .parameters(
-                        Parameter.builder().optionalWeak().literal("reload").key("reload").build(),
-                        Parameter.builder().optionalWeak().plugin().key("plugin").build()
+                        Parameter.builder().optionalWeak().literal("reload").setKey("reload").build(),
+                        Parameter.builder().optionalWeak().plugin().setKey("plugin").build()
                 )
-                .executor((src, args) -> {
+                .setExecutor((src, args) -> {
                     if (args.hasAny("reload") && src.hasPermission("sponge.command.plugins.reload")) {
                         src.sendMessage(Text.of("Sending reload event to all plugins. Please wait."));
                         Sponge.getCauseStackManager().pushCause(src);
@@ -618,10 +617,10 @@ public class SpongeCommands {
 
     private static Command createSpongeTimingsCommand() {
         return Command.builder()
-                .permission("sponge.command.timings")
-                .description(Text.of("Manages Sponge Timings data to see performance of the server."))
-                .addChild(Command.builder()
-                        .executor((src, args) -> {
+                .setPermission("sponge.command.timings")
+                .setShortDescription(Text.of("Manages Sponge Timings data to see performance of the server."))
+                .child(Command.builder()
+                        .setExecutor((src, args) -> {
                             if (!Timings.isTimingsEnabled()) {
                                 src.sendMessage(Text.of("Please enable timings by typing /sponge timings on"));
                                 return CommandResult.empty();
@@ -631,8 +630,8 @@ public class SpongeCommands {
                             return CommandResult.success();
                         })
                         .build(), "reset")
-                .addChild(Command.builder()
-                        .executor((src, args) -> {
+                .child(Command.builder()
+                        .setExecutor((src, args) -> {
                             if (!Timings.isTimingsEnabled()) {
                                 src.sendMessage(Text.of("Please enable timings by typing /sponge timings on"));
                                 return CommandResult.empty();
@@ -641,22 +640,22 @@ public class SpongeCommands {
                             return CommandResult.success();
                         })
                         .build(), "report", "paste")
-                .addChild(Command.builder()
-                        .executor((src, args) -> {
+                .child(Command.builder()
+                        .setExecutor((src, args) -> {
                             Timings.setTimingsEnabled(true);
                             src.sendMessage(Text.of("Enabled Timings & Reset"));
                             return CommandResult.success();
                         })
                         .build(), "on")
-                .addChild(Command.builder()
-                        .executor((src, args) -> {
+                .child(Command.builder()
+                        .setExecutor((src, args) -> {
                             Timings.setTimingsEnabled(false);
                             src.sendMessage(Text.of("Disabled Timings"));
                             return CommandResult.success();
                         })
                         .build(), "off")
-                .addChild(Command.builder()
-                        .executor((src, args) -> {
+                .child(Command.builder()
+                        .setExecutor((src, args) -> {
                             if (!Timings.isTimingsEnabled()) {
                                 src.sendMessage(Text.of("Please enable timings by typing /sponge timings on"));
                                 return CommandResult.empty();
@@ -666,8 +665,8 @@ public class SpongeCommands {
                             return CommandResult.success();
                         })
                         .build(), "verbon")
-                .addChild(Command.builder()
-                        .executor((src, args) -> {
+                .child(Command.builder()
+                        .setExecutor((src, args) -> {
                             if (!Timings.isTimingsEnabled()) {
                                 src.sendMessage(Text.of("Please enable timings by typing /sponge timings on"));
                                 return CommandResult.empty();
@@ -677,8 +676,8 @@ public class SpongeCommands {
                             return CommandResult.success();
                         })
                         .build(), "verboff")
-                .addChild(Command.builder()
-                        .executor((src, args) -> {
+                .child(Command.builder()
+                        .setExecutor((src, args) -> {
                             if (!Timings.isTimingsEnabled()) {
                                 src.sendMessage(Text.of("Please enable timings by typing /sponge timings on"));
                                 return CommandResult.empty();
@@ -692,12 +691,12 @@ public class SpongeCommands {
 
     private static Command createSpongeWhichCommand() {
         return Command.builder()
-                .permission("sponge.command.which")
-                .description(Text.of("List plugins that own a specific command"))
+                .setPermission("sponge.command.which")
+                .setShortDescription(Text.of("List plugins that own a specific command"))
                 .parameters(
-                        Parameter.builder().key("command").choices(() -> Sponge.getCommandManager().getAll().keySet(), Function.identity()).build()
+                        Parameter.builder().setKey("command").choices(() -> Sponge.getCommandManager().getAll().keySet(), Function.identity()).build()
                 )
-                .executor((src, args) -> {
+                .setExecutor((src, args) -> {
                     CommandManager mgr = Sponge.getCommandManager();
                     String commandName = args.<String>getOne("command").get();
                     CommandMapping primary = mgr.get(commandName, src)
