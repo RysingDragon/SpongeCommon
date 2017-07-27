@@ -39,11 +39,12 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandPermissionException;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.InvocationCommandException;
-import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.dispatcher.Disambiguator;
 import org.spongepowered.api.event.CauseStackManager.StackFrame;
+import org.spongepowered.api.command.format.CommandMessageFormats;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.command.TabCompleteEvent;
@@ -72,8 +73,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+<<<<<<< HEAD
 import java.util.function.Function;
 import java.util.regex.Pattern;
+=======
+>>>>>>> Update with API, add message format catalog
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -144,9 +148,9 @@ public class SpongeCommandManager implements CommandManager {
             // <namespace>:<alias> for all commands
             List<String> aliasesWithPrefix = new ArrayList<>(aliases.size() * 3);
             for (final String originalAlias : aliases) {
-                final String alias = this.fixAlias(container, originalAlias);
+                final String alias = this.fixAlias(pluginContainer, originalAlias);
                 if (aliasesWithPrefix.contains(alias)) {
-                    this.logger.debug("Plugin '{}' is attempting to register duplicate alias '{}'", container.getId(), alias);
+                    this.logger.debug("Plugin '{}' is attempting to register duplicate alias '{}'", pluginContainer.getId(), alias);
                     continue;
                 }
                 final Collection<CommandMapping> ownedCommands = this.owners.get(pluginContainer);
@@ -337,19 +341,20 @@ public class SpongeCommandManager implements CommandManager {
                 this.completeCommandPhase();
                 Text text = ex.getText();
                 if (text != null) {
-                    source.sendMessage(error(text));
+                    source.sendMessage(CommandMessageFormats.ERROR.applyFormat(text));
                 }
             } catch (CommandException ex) {
                 this.completeCommandPhase();
                 Text text = ex.getText();
                 if (text != null) {
-                    source.sendMessage(error(text));
+                    source.sendMessage(CommandMessageFormats.ERROR.applyFormat(text));
                 }
 
                 if (ex.shouldIncludeUsage()) {
                     final Optional<CommandMapping> mapping = this.dispatcher.get(argSplit[0], source);
                     if (mapping.isPresent()) {
-                        source.sendMessage(error(t("Usage: /%s %s", argSplit[0], mapping.get().getCommand().getUsage(source))));
+                        source.sendMessage(CommandMessageFormats.ERROR.applyFormat(
+                                t("Usage: /%s %s", argSplit[0], mapping.get().getCommand().getUsage(source))));
                     }
                 }
             }
@@ -370,7 +375,7 @@ public class SpongeCommandManager implements CommandManager {
                         .replace("\r\n", "\n")
                         .replace("\r", "\n")))); // I mean I guess somebody could be running this on like OS 9?
             }
-            source.sendMessage(error(t("Error occurred while executing command: %s", excBuilder.build())));
+            source.sendMessage(CommandMessageFormats.ERROR.applyFormat(t("Error occurred while executing command: %s", excBuilder.build())));
             this.logger.error(TextSerializers.PLAIN.serialize(t("Error occurred while executing command '%s' for source %s: %s", commandLine, source.toString(), String
                     .valueOf(thr.getMessage()))), thr);
         }
@@ -397,7 +402,7 @@ public class SpongeCommandManager implements CommandManager {
             return ImmutableList.copyOf(event.getTabCompletions());
         } catch (Exception e) {
             if (e instanceof CommandException) {
-                src.sendMessage(error(t("Error getting suggestions: %s", ((CommandException) e).getText())));
+                src.sendMessage(CommandMessageFormats.ERROR.applyFormat(t("Error getting suggestions: %s", ((CommandException) e).getText())));
                 return Collections.emptyList();
             }
             throw new RuntimeException(String.format("Error occurred while tab completing '%s'", arguments), e);
