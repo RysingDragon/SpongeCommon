@@ -312,7 +312,7 @@ public class SpongeDispatcher implements Dispatcher {
         final String[] argSplit = arguments.split(" ", 2);
         Optional<CommandMapping> cmdOptional = get(argSplit[0], src);
         if (argSplit.length == 1) {
-            return filterCommands(src).stream().filter(new StartsWithPredicate(argSplit[0])).collect(ImmutableList.toImmutableList());
+            return filterCommands(src, argSplit[0]).stream().collect(ImmutableList.toImmutableList());
         } else if (!cmdOptional.isPresent()) {
             return ImmutableList.of();
         }
@@ -361,6 +361,12 @@ public class SpongeDispatcher implements Dispatcher {
 
     private Set<String> filterCommands(final CommandSource src) {
         return Multimaps.filterValues(this.commands, input -> input.getCommand().testPermission(src)).keys().elementSet();
+    }
+
+    // Filter out commands by String first
+    private Set<String> filterCommands(final CommandSource src, String start) {
+        ListMultimap<String, CommandMapping> map = Multimaps.filterKeys(this.commands, input -> input != null && input.toLowerCase().startsWith(start.toLowerCase()));
+        return Multimaps.filterValues(map, input -> input.getCommand().testPermission(src)).keys().elementSet();
     }
 
     /**
