@@ -28,9 +28,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -95,9 +95,14 @@ public class PaginationServiceTest {
         }
 
         Sponge.getCommandManager().register(this,
-                CommandSpec.builder()
-                        .arguments(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.integer(Text.of("page")))))
-                        .executor((src, args) -> {
+                Command.builder()
+                        .parameter(Parameter.builder()
+                                .setKey("page")
+                                .integerNumber()
+                                .optionalWeak()
+                                .onlyOne()
+                                .build())
+                        .setExecutor((src, args) -> {
                             this.paginationList.sendTo(src, args.<Integer>getOne("page").orElse(1));
 
                             return CommandResult.success();
