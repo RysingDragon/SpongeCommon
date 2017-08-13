@@ -42,11 +42,11 @@ import static org.spongepowered.api.util.SpongeApiTranslationHelper.t;
 public class LiteralValueParameter implements ValueParameter {
 
     private final Supplier<Iterable<String>> literalSupplier;
-    @Nullable private final Object returnedValue;
+    private final Supplier<?> returnedValueSupplier;
 
-    public LiteralValueParameter(@Nullable Object returnedValue, Supplier<Iterable<String>> literalSupplier) {
+    public LiteralValueParameter(Supplier<Iterable<String>> literalSupplier, Supplier<?> returnedValueSupplier) {
         this.literalSupplier = literalSupplier;
-        this.returnedValue = returnedValue;
+        this.returnedValueSupplier = returnedValueSupplier;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class LiteralValueParameter implements ValueParameter {
             }
         }
 
-        return Optional.ofNullable(this.returnedValue);
+        return Optional.ofNullable(this.returnedValueSupplier.get());
     }
 
     @Override
@@ -84,5 +84,15 @@ public class LiteralValueParameter implements ValueParameter {
     @Override
     public Text getUsage(Text key, CommandSource source) {
         return Text.of(String.join(" ", this.literalSupplier.get()));
+    }
+
+    // For the resettable builder
+
+    public Supplier<Iterable<String>> getLiteralSupplier() {
+        return literalSupplier;
+    }
+
+    public Supplier<?> getReturnedValueSupplier() {
+        return returnedValueSupplier;
     }
 }

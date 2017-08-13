@@ -22,23 +22,4 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.registry.factory;
-
-import org.spongepowered.api.command.parameter.managed.ValueParameters;
-import org.spongepowered.api.command.parameter.managed.factories.ValueParameterFactory;
-import org.spongepowered.api.registry.FactoryRegistry;
-import org.spongepowered.common.command.parameter.factory.SpongeValueParameterFactory;
-
-public class ValueParameterFactoryModule implements FactoryRegistry<ValueParameterFactory, ValueParameters> {
-
-    @Override
-    public Class<ValueParameters> getFactoryOwner() {
-        return ValueParameters.class;
-    }
-
-    @Override
-    public ValueParameterFactory provideFactory() {
-        return new SpongeValueParameterFactory();
-    }
-
-}
+@org.spongepowered.api.util.annotation.NonnullByDefault package org.spongepowered.common.command.parameter.modifier.builder;

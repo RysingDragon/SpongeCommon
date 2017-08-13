@@ -111,8 +111,8 @@ public class SpongeCommands {
 
     private static final DecimalFormat THREE_DECIMAL_DIGITS_FORMATTER = new DecimalFormat("########0.000");
     private static final Flags FLAGS = Flags.builder().flag("-global", "g")
-            .valueFlag(Parameter.builder().worldProperties().setKey(Text.of("world")).build(), "-world", "w")
-            .valueFlag(Parameter.builder().dimension().setKey(Text.of("dimension")).build(), "-dimension", "d")
+            .valueFlag(Parameter.worldProperties().setKey(Text.of("world")).build(), "-world", "w")
+            .valueFlag(Parameter.dimension().setKey(Text.of("dimension")).build(), "-dimension", "d")
             .build();
     /**
      * Create a new instance of the Sponge command structure.
@@ -223,8 +223,8 @@ public class SpongeCommands {
     private static Command createSpongeChunksCommand() {
         return Command.builder()
                 .parameters(
-                        Parameter.builder().optional().setKey("dump").literal("dump").build(),
-                        Parameter.builder().optional().setKey("dump-all").literal("all").build()
+                        Parameter.literal("dump").optional().setKey("dump").build(),
+                        Parameter.literal("all").optional().setKey("dump-all").build()
                 )
                 .setFlags(FLAGS)
                 .setShortDescription(Text.of("Print chunk information, optionally dump"))
@@ -296,8 +296,8 @@ public class SpongeCommands {
                 .setShortDescription(Text.of("Inspect the Sponge config"))
                 .setFlags(FLAGS)
                 .parameters(
-                        Parameter.builder().setKey("key").string().build(),
-                        Parameter.builder().optional().setKey("value").string().build()
+                        Parameter.string().setKey("key").build(),
+                        Parameter.string().optional().setKey("value").build()
                 )
                 .setPermission("sponge.command.config")
                 .setExecutor(new ConfigUsingExecutor(false) {
@@ -360,7 +360,7 @@ public class SpongeCommands {
                 .setFlags(FLAGS)
                 .setPermission("sponge.command.tps")
                 .setShortDescription(Text.of("Provides TPS (ticks per second) data for loaded worlds."))
-                .parameters(Parameter.builder().optional().worldProperties().setKey("world").build())
+                .parameters(Parameter.worldProperties().optional().setKey("world").build())
                 .setExecutor((src, args) -> {
                     if (args.hasAny("world")) {
                         for (WorldProperties properties : args.<WorldProperties>getAll("world")) {
@@ -511,8 +511,8 @@ public class SpongeCommands {
                 .setShortDescription(Text.of("List currently installed plugins"))
                 .setPermission("sponge.command.plugins")
                 .parameters(
-                        Parameter.builder().optionalWeak().literal("reload").setKey("reload").build(),
-                        Parameter.builder().optionalWeak().plugin().setKey("plugin").build()
+                        Parameter.literal("reload").optionalWeak().setKey("reload").build(),
+                        Parameter.plugin().optionalWeak().setKey("plugin").build()
                 )
                 .setExecutor((src, args) -> {
                     if (args.hasAny("reload") && src.hasPermission("sponge.command.plugins.reload")) {
@@ -694,7 +694,7 @@ public class SpongeCommands {
                 .setPermission("sponge.command.which")
                 .setShortDescription(Text.of("List plugins that own a specific command"))
                 .parameters(
-                        Parameter.builder().setKey("command").choices(() -> Sponge.getCommandManager().getAll().keySet(), Function.identity()).build()
+                        Parameter.choices(() -> Sponge.getCommandManager().getAll().keySet(), Function.identity()).setKey("command").build()
                 )
                 .setExecutor((src, args) -> {
                     CommandManager mgr = Sponge.getCommandManager();

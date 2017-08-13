@@ -22,43 +22,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.command.parameter.factory;
+package org.spongepowered.common.command.parameter.modifier.builder;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.parameter.managed.ValueParameterModifier;
-import org.spongepowered.api.command.parameter.managed.factories.ValueParameterModifierFactory;
-import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.command.parameter.managed.standard.VariableValueParameterModifiers;
 import org.spongepowered.common.command.parameter.modifier.DefaultValueModifier;
-import org.spongepowered.common.command.parameter.modifier.DefaultValueSuppplierModifier;
-import org.spongepowered.common.command.parameter.modifier.RepeatedModifier;
-import org.spongepowered.common.command.parameter.modifier.SelectorModifier;
 
-import java.util.Collection;
-import java.util.function.Supplier;
+import java.util.Optional;
+import java.util.function.Function;
 
-public class SpongeValueParameterModifierFactory implements ValueParameterModifierFactory {
+import javax.annotation.Nullable;
+
+public class SpongeDefaultValueModifierBuilder implements VariableValueParameterModifiers.DefaultValueModifierBuilder {
+
+    @Nullable private Function<CommandSource, Optional<?>> defaultValueFunction = null;
 
     @Override
-    public ValueParameterModifier repeated(int times) {
-        return new RepeatedModifier(times);
+    public VariableValueParameterModifiers.DefaultValueModifierBuilder setDefaultValueFunction(
+            Function<CommandSource, Optional<?>> defaultValueFunction) {
+        this.defaultValueFunction = defaultValueFunction;
+        return this;
     }
 
     @Override
-    public ValueParameterModifier selector(Collection<Class<? extends Entity>> supportedEntities, boolean requireOne, boolean strict) {
-        Preconditions.checkNotNull(supportedEntities, "supportedEntities");
-        Preconditions.checkArgument(!supportedEntities.isEmpty(), "supportedEntities must not be zero length");
-        return new SelectorModifier(Lists.newArrayList(supportedEntities), requireOne, strict);
+    public VariableValueParameterModifiers.DefaultValueModifierBuilder from(ValueParameterModifier value) {
+        Preconditions.checkArgument(value instanceof DefaultValueModifier, "value must be a DefaultValueModifier");
+        this.defaultValueFunction = ((DefaultValueModifier) value).getDefaultValueFunction();
+        return this;
     }
 
     @Override
-    public ValueParameterModifier defaultValue(Object defaultValue) {
-        return new DefaultValueModifier(defaultValue);
+    public VariableValueParameterModifiers.DefaultValueModifierBuilder reset() {
+        this.defaultValueFunction = null;
+        return this;
     }
 
     @Override
-    public ValueParameterModifier defaultValueSupplier(Supplier<Object> defaultValueSupplier) {
-        return new DefaultValueSuppplierModifier(defaultValueSupplier);
+    public ValueParameterModifier build() {
+        Preconditions.checkState(this.defaultValueFunction != null, "defaultValueFunction");
+        return new DefaultValueModifier(this.defaultValueFunction);
     }
 
 }

@@ -96,9 +96,8 @@ public class PaginationServiceTest {
 
         Sponge.getCommandManager().register(this,
                 Command.builder()
-                        .parameter(Parameter.builder()
+                        .parameter(Parameter.integerNumber()
                                 .setKey("page")
-                                .integerNumber()
                                 .optionalWeak()
                                 .onlyOne()
                                 .build())

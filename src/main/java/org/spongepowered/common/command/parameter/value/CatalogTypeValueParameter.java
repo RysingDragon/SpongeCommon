@@ -24,6 +24,7 @@
  */
 package org.spongepowered.common.command.parameter.value;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.GameRegistry;
@@ -37,11 +38,11 @@ import java.util.stream.Collectors;
 public class CatalogTypeValueParameter<T extends CatalogType> extends PatternMatchingValueParameter {
 
     private final Class<T> catalogType;
-    private final Collection<String> prefixes;
+    private final Iterable<String> prefixes;
 
-    public CatalogTypeValueParameter(Class<T> catalogType, String... prefixes) {
+    public CatalogTypeValueParameter(Class<T> catalogType, Iterable<String> prefixes) {
         this.catalogType = catalogType;
-        this.prefixes = Arrays.stream(prefixes).map(x -> x.toLowerCase(Locale.ENGLISH)).collect(Collectors.toList());
+        this.prefixes = Iterables.transform(prefixes, x -> x.toLowerCase(Locale.ENGLISH));
     }
 
     @Override
@@ -68,4 +69,15 @@ public class CatalogTypeValueParameter<T extends CatalogType> extends PatternMat
         }
         return ret.get();
     }
+
+    // Below is used for resettable builder
+
+    public Class<T> getCatalogType() {
+        return this.catalogType;
+    }
+
+    public Iterable<String> getPrefixes() {
+        return this.prefixes;
+    }
+
 }

@@ -27,22 +27,23 @@ package org.spongepowered.common.command.parameter.value;
 import com.google.common.collect.ImmutableList;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.parameter.managed.impl.SelectorValueParameter;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.user.UserStorageService;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 
 import java.util.Optional;
 
-public class UserValueParameter extends ReturnSourceParameter implements CatalogedValueParameter {
+public class UserValueParameter extends SelectorValueParameter implements CatalogedValueParameter {
 
     private final PlayerValueParameter element;
     private final String name;
     private final String id;
 
-    public UserValueParameter(String id, String name, PlayerValueParameter element, boolean sourceOnFail) {
-        super(Player.class, sourceOnFail ? Player.class : null);
+    public UserValueParameter(String id, String name, PlayerValueParameter element) {
+        super(Player.class);
         this.id = id;
         this.name = name;
         this.element = element;

@@ -26,19 +26,20 @@ package org.spongepowered.common.command.parameter.value;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.parameter.managed.impl.SelectorValueParameter;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 import org.spongepowered.common.SpongeImpl;
 
 import java.util.Arrays;
 
-public class PlayerValueParameter extends ReturnSourceParameter implements CatalogedValueParameter {
+public class PlayerValueParameter extends SelectorValueParameter implements CatalogedValueParameter {
 
     private final String id;
     private final String name;
 
-    public PlayerValueParameter(String id, String name, boolean sourceOnFail) {
-        super(Player.class, sourceOnFail ? Player.class : null);
+    public PlayerValueParameter(String id, String name) {
+        super(Player.class);
         this.id = id;
         this.name = name;
     }

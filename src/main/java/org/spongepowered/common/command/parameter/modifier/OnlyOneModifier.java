@@ -31,7 +31,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.command.parameter.ArgumentParseException;
 import org.spongepowered.api.command.parameter.managed.ParsingContext;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameterModifier;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameterModifier;
 import org.spongepowered.api.command.parameter.token.CommandArgs;
 
 public class OnlyOneModifier implements CatalogedValueParameterModifier {

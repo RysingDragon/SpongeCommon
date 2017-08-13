@@ -50,7 +50,7 @@ public class SpongeHelpCommand {
 
     public static Command create() {
         return Command.builder()
-            .parameters(Parameter.builder().setKey("command").optional().string().build())
+            .parameters(Parameter.string().setKey("command").optional().build())
             .setShortDescription(Text.of("View a list of all commands."))
             .setExtendedDescription(
                 Text.of("View a list of all commands. Hover over\n" + " a command to view its description. Click\n"

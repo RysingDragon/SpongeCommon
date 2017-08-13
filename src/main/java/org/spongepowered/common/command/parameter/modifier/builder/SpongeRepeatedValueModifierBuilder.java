@@ -22,39 +22,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.command.parameter.modifier;
+package org.spongepowered.common.command.parameter.modifier.builder;
 
 import com.google.common.base.Preconditions;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.parameter.CommandContext;
-import org.spongepowered.api.command.parameter.ArgumentParseException;
-import org.spongepowered.api.command.parameter.managed.ParsingContext;
 import org.spongepowered.api.command.parameter.managed.ValueParameterModifier;
-import org.spongepowered.api.command.parameter.token.CommandArgs;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.command.parameter.managed.standard.VariableValueParameterModifiers;
+import org.spongepowered.common.command.parameter.modifier.RepeatedModifier;
 
-import java.util.function.Supplier;
+public class SpongeRepeatedValueModifierBuilder implements VariableValueParameterModifiers.RepeatedValueModifierBuilder {
 
-public class DefaultValueSuppplierModifier implements ValueParameterModifier {
+    private int numberOfTimes = 0; // Zero indicates the default, and is not valid
 
-    private final Supplier<Object> defaultValueSupplier;
-
-    public DefaultValueSuppplierModifier(Supplier<Object> defaultValueSupplier) {
-        Preconditions.checkNotNull(defaultValueSupplier, "The supplier cannot be null.");
-        this.defaultValueSupplier = defaultValueSupplier;
+    @Override
+    public VariableValueParameterModifiers.RepeatedValueModifierBuilder setNumberOfTimes(int numberOfTimes) {
+        Preconditions.checkArgument(numberOfTimes > 0, "numberOfTimes must be positive");
+        this.numberOfTimes = numberOfTimes;
+        return this;
     }
 
     @Override
-    public void onParse(Text key, CommandSource source, CommandArgs args, CommandContext context, ParsingContext parsingContext)
-            throws ArgumentParseException {
-        parsingContext.next();
+    public VariableValueParameterModifiers.RepeatedValueModifierBuilder from(ValueParameterModifier value) {
+        Preconditions.checkState(value instanceof RepeatedModifier, "value must be a RepeatedModifier");
+        this.numberOfTimes = ((RepeatedModifier) value).getNumberOfRepetitions();
+        return this;
+    }
 
-        if (!context.hasAny(key)) {
-            Object def = defaultValueSupplier.get();
-            if (def != null) {
-                context.putEntry(key, def);
-            }
-        }
+    @Override
+    public VariableValueParameterModifiers.RepeatedValueModifierBuilder reset() {
+        this.numberOfTimes = 0;
+        return this;
+    }
+
+    @Override
+    public ValueParameterModifier build() {
+        Preconditions.checkState(this.numberOfTimes > 0, "numberOfTimes must be set");
+        return new RepeatedModifier(this.numberOfTimes);
     }
 
 }

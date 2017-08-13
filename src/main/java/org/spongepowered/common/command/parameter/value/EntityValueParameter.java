@@ -27,10 +27,11 @@ package org.spongepowered.common.command.parameter.value;
 import com.google.common.collect.Iterables;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.parameter.managed.impl.SelectorValueParameter;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 
 import java.util.Optional;
 import java.util.Set;
@@ -38,13 +39,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class EntityValueParameter extends ReturnSourceParameter implements CatalogedValueParameter {
+public class EntityValueParameter extends SelectorValueParameter implements CatalogedValueParameter {
 
     private final String id;
     private final String name;
 
-    public EntityValueParameter(String id, String name, boolean sourceOnFail) {
-        super(Entity.class, sourceOnFail ? Entity.class : null);
+    public EntityValueParameter(String id, String name) {
+        super(Entity.class);
         this.id = id;
         this.name = name;
     }

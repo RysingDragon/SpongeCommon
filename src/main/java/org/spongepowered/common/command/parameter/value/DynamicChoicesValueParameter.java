@@ -24,33 +24,41 @@
  */
 package org.spongepowered.common.command.parameter.value;
 
+import static org.spongepowered.api.util.SpongeApiTranslationHelper.t;
+
+import com.google.common.collect.Iterables;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.ArgumentParseException;
+import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.managed.ValueParameter;
 import org.spongepowered.api.command.parameter.token.CommandArgs;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tristate;
 
-import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-import static org.spongepowered.api.util.SpongeApiTranslationHelper.t;
+import javax.annotation.Nullable;
 
-public class ChoicesValueParameter implements ValueParameter {
+public class DynamicChoicesValueParameter implements ValueParameter {
 
     private static final int CUTOFF = 5;
 
-    private final Map<String, Supplier<?>> choices;
+    private final Supplier<Iterable<String>> choiceSupplier;
+    private final Function<String, ?> resultFunction;
     private final Tristate includeChoicesInUsage;
 
-    public ChoicesValueParameter(Map<String, Supplier<?>> choices, Tristate includeChoicesInUsage) {
-        this.choices = choices;
+    public DynamicChoicesValueParameter(Supplier<Iterable<String>> choiceSupplier, Function<String, ?> resultFunction,
+            Tristate includeChoicesInUsage) {
+        this.choiceSupplier = choiceSupplier;
+        this.resultFunction = resultFunction;
         this.includeChoicesInUsage = includeChoicesInUsage;
     }
 
@@ -62,24 +70,27 @@ public class ChoicesValueParameter implements ValueParameter {
 
     @Nullable
     public Object getValue(String nextArg, CommandArgs args) throws ArgumentParseException {
-        return this.choices.entrySet().stream().filter(k -> k.getKey().equalsIgnoreCase(nextArg)).findFirst()
-                .orElseThrow(() -> args.createError(t("Argument was not a valid choice. Valid choices: %s",
-                        this.choices.keySet().stream().map(x -> x.toLowerCase(Locale.ENGLISH))
-                                .sorted().collect(Collectors.joining(", ")))))
-                .getValue().get();
+        Iterable<String> suppliedChoices = this.choiceSupplier.get();
+        for (String choice : suppliedChoices) {
+            if (choice.equalsIgnoreCase(nextArg)) {
+                return this.resultFunction.apply(choice);
+            }
+        }
+
+        throw args.createError(t("Argument was not a valid choice. Valid choices: %s", String.join(", ", suppliedChoices)));
     }
 
     @Override
     public List<String> complete(CommandSource source, CommandArgs args, CommandContext context) throws ArgumentParseException {
         final String nextArg = args.peek();
-        return this.choices.keySet().stream().filter(x -> x.toLowerCase(Locale.ENGLISH)
+        return StreamSupport.stream(this.choiceSupplier.get().spliterator(), false).filter(x -> x.toLowerCase(Locale.ENGLISH)
                 .startsWith(nextArg.toLowerCase(Locale.ENGLISH))).sorted().collect(Collectors.toList());
     }
 
     @Override
     public Text getUsage(Text key, CommandSource source) {
         if (this.includeChoicesInUsage != Tristate.FALSE) {
-            List<String> choices = this.choices.keySet().stream().sorted().collect(Collectors.toList());
+            List<String> choices = StreamSupport.stream(this.choiceSupplier.get().spliterator(), false).sorted().collect(Collectors.toList());
             if (this.includeChoicesInUsage.asBoolean() || choices.size() < CUTOFF) {
                 return Text.of("<", String.join("|", choices), ">");
             }
@@ -87,8 +98,12 @@ public class ChoicesValueParameter implements ValueParameter {
         return key;
     }
 
-    public Map<String, Supplier<?>> getChoices() {
-        return this.choices;
+    public Supplier<Iterable<String>> getChoiceSupplier() {
+        return choiceSupplier;
+    }
+
+    public Function<String, ?> getResultFunction() {
+        return resultFunction;
     }
 
     public Tristate getIncludeChoicesInUsage() {

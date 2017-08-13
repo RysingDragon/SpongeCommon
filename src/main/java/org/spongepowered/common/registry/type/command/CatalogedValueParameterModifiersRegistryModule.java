@@ -27,11 +27,12 @@ package org.spongepowered.common.registry.type.command;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameterModifier;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameterModifiers;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameterModifier;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameterModifiers;
 import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 import org.spongepowered.api.registry.util.RegisterCatalog;
 import org.spongepowered.common.command.parameter.modifier.AllOfModifier;
+import org.spongepowered.common.command.parameter.modifier.CatalogableOrSourceDefaultValueModifier;
 import org.spongepowered.common.command.parameter.modifier.OnlyOneModifier;
 import org.spongepowered.common.command.parameter.modifier.OptionalModifier;
 import org.spongepowered.common.command.parameter.modifier.OptionalWeakModifier;
@@ -49,8 +50,8 @@ public class CatalogedValueParameterModifiersRegistryModule implements Additiona
 
     @Override
     public void registerAdditionalCatalog(CatalogedValueParameterModifier extraCatalog) {
-        Preconditions.checkArgument(!idMappings.containsKey(extraCatalog.getId().toLowerCase(Locale.ENGLISH)), "That ID has already been "
-                + "registered.");
+        Preconditions.checkArgument(!idMappings.containsKey(extraCatalog.getId().toLowerCase(Locale.ENGLISH)),
+                "That ID has already been registered.");
 
         this.idMappings.put(extraCatalog.getId(), extraCatalog);
     }
@@ -71,6 +72,9 @@ public class CatalogedValueParameterModifiersRegistryModule implements Additiona
         this.parserModifierMappings.put("only_one", new OnlyOneModifier());
         this.parserModifierMappings.put("optional", new OptionalModifier());
         this.parserModifierMappings.put("optional_weak", new OptionalWeakModifier());
+        this.parserModifierMappings.put("or_source", CatalogableOrSourceDefaultValueModifier.OR_SOURCE);
+        this.parserModifierMappings.put("or_entity_source", CatalogableOrSourceDefaultValueModifier.OR_ENTITY_SOURCE);
+        this.parserModifierMappings.put("or_player_source", CatalogableOrSourceDefaultValueModifier.OR_PLAYER_SOURCE);
 
         this.parserModifierMappings.forEach((k, v) -> this.idMappings.put(v.getId().toLowerCase(Locale.ENGLISH), v));
     }

@@ -24,32 +24,54 @@
  */
 package org.spongepowered.common.command.parameter.modifier;
 
-import com.google.common.base.Preconditions;
+import org.spongepowered.api.command.CommandMessageFormatting;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.ArgumentParseException;
+import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.managed.ParsingContext;
 import org.spongepowered.api.command.parameter.managed.ValueParameterModifier;
 import org.spongepowered.api.command.parameter.token.CommandArgs;
 import org.spongepowered.api.text.Text;
 
+import java.util.Optional;
+import java.util.function.Function;
+
 public class DefaultValueModifier implements ValueParameterModifier {
 
-    private final Object defaultValue;
+    private final Function<CommandSource, Optional<?>> defaultValueFunction;
 
-    public DefaultValueModifier(Object defaultValue) {
-        Preconditions.checkNotNull(defaultValue, "The default cannot be null.");
-        this.defaultValue = defaultValue;
+    public DefaultValueModifier(Function<CommandSource, Optional<?>> defaultValueFunction) {
+        this.defaultValueFunction = defaultValueFunction;
     }
 
     @Override
     public void onParse(Text key, CommandSource source, CommandArgs args, CommandContext context, ParsingContext parsingContext)
             throws ArgumentParseException {
-        parsingContext.next();
+        if (args.hasNext()) {
+            CommandArgs.Snapshot state = args.getState();
+            CommandContext.Snapshot contextState = context.getState();
+            try {
+                parsingContext.next();
+            } catch (ArgumentParseException ex) {
+                args.setState(state);
+                context.setState(contextState);
 
-        if (!context.hasAny(key)) {
-            context.putEntry(key, this.defaultValue);
+                context.putEntry(key, this.defaultValueFunction.apply(source).orElseThrow(() -> ex));
+            }
         }
+    }
+
+    @Override
+    public Text getUsage(Text key, CommandSource source, Text currentUsage) {
+        // If this applies, add the square brackets
+        return this.defaultValueFunction.apply(source).map(x -> Text.of(
+                CommandMessageFormatting.LEFT_SQUARE,
+                key,
+                CommandMessageFormatting.RIGHT_SQUARE)).orElse(currentUsage);
+    }
+
+    public Function<CommandSource, Optional<?>> getDefaultValueFunction() {
+        return defaultValueFunction;
     }
 
 }

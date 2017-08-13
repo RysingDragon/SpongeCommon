@@ -30,7 +30,7 @@ import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.token.CommandArgs;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.command.parameter.ArgumentParseException;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 
 import javax.annotation.Nullable;
 import java.time.Duration;

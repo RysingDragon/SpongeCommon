@@ -24,7 +24,8 @@
  */
 package org.spongepowered.common.command.parameter.value;
 
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import com.google.common.collect.ImmutableMap;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 import org.spongepowered.api.util.Tristate;
 
 import java.util.Map;
@@ -32,11 +33,27 @@ import java.util.function.Supplier;
 
 public class CatalogableChoicesValueParameter extends ChoicesValueParameter implements CatalogedValueParameter {
 
+    public static final CatalogableChoicesValueParameter BOOLEAN = new CatalogableChoicesValueParameter(
+            "sponge:boolean",
+            "Boolean",
+            ImmutableMap.<String, Supplier<?>>builder()
+                    .put("true", () -> true)
+                    .put("t", () -> true)
+                    .put("yes", () -> true)
+                    .put("y", () -> true)
+                    .put("verymuchso", () -> true)
+                    .put("false", () -> false)
+                    .put("f", () -> false)
+                    .put("no", () -> false)
+                    .put("n", () -> false)
+                    .put("notatall", () -> false)
+                    .build(),
+            Tristate.TRUE);
+
     private final String id;
     private final String name;
 
-    public CatalogableChoicesValueParameter(String id, String name,
-            Supplier<Map<String, ?>> choicesSupplier, Tristate includeChoicesInUsage) {
+    public CatalogableChoicesValueParameter(String id, String name, Map<String, Supplier<?>> choicesSupplier, Tristate includeChoicesInUsage) {
         super(choicesSupplier, includeChoicesInUsage);
         this.id = id;
         this.name = name;

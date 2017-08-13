@@ -37,7 +37,7 @@ import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.ArgumentParseException;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 
 import javax.annotation.Nullable;
 import java.util.List;

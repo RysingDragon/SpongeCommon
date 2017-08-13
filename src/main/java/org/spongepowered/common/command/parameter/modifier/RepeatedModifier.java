@@ -25,7 +25,9 @@
 package org.spongepowered.common.command.parameter.modifier;
 
 import com.google.common.base.Preconditions;
+import org.spongepowered.api.command.CommandMessageFormatting;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.format.CommandMessageFormats;
 import org.spongepowered.api.command.parameter.token.CommandArgs;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.command.parameter.CommandContext;
@@ -51,4 +53,21 @@ public class RepeatedModifier implements ValueParameterModifier {
 
     }
 
+    @Override
+    public Text getUsage(Text key, CommandSource source, Text currentUsage) {
+        Text.Builder repeatedBuilder = Text.builder();
+        for (int i = 0; i < this.numberOfRepetitions; i++) {
+            if (i > 0) {
+                repeatedBuilder.append(CommandMessageFormatting.SPACE_TEXT);
+            }
+
+            repeatedBuilder.append(currentUsage);
+        }
+
+        return repeatedBuilder.build();
+    }
+
+    public int getNumberOfRepetitions() {
+        return this.numberOfRepetitions;
+    }
 }

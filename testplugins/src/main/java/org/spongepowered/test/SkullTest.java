@@ -56,7 +56,7 @@ public class SkullTest {
         Sponge.getCommandManager().register(this,
                 Command.builder()
                         .setShortDescription(Text.of("Gives you your player mobHead"))
-                        .parameter(Parameter.builder().playerOrSource().setKey(PLAYER).build())
+                        .parameter(Parameter.playerOrSource().setKey(PLAYER).build())
                         .setExecutor(giveSkull(SkullTest::playerHead))
                         .build(),
                 "skullme");
@@ -64,7 +64,7 @@ public class SkullTest {
         Sponge.getCommandManager().register(this,
                 Command.builder()
                         .setShortDescription(Text.of("Gives you a Marcs Head Format Blaze"))
-                        .parameter(Parameter.builder().playerOrSource().setKey(PLAYER).build())
+                        .parameter(Parameter.playerOrSource().setKey(PLAYER).build())
                         .setExecutor(giveSkull(SkullTest::blazeHead))
                         .build(),
                 "skullblaze");
@@ -72,8 +72,8 @@ public class SkullTest {
         Sponge.getCommandManager().register(this,
                 Command.builder()
                         .setShortDescription(Text.of("Gives you a monster head"))
-                        .parameter(Parameter.builder().playerOrSource().setKey(PLAYER).build())
-                        .parameter(Parameter.builder().catalogedElement(SkullType.class).setKey(SKULL).build())
+                        .parameter(Parameter.playerOrSource().setKey(PLAYER).build())
+                        .parameter(Parameter.catalogedElement(SkullType.class).setKey(SKULL).build())
                         .setExecutor(giveSkull(SkullTest::mobHead))
                         .build(),
                 "skullmob");

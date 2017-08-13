@@ -63,7 +63,7 @@ public class StandardCommandsTest {
         }).build(), "permission");
 
         Sponge.getCommandManager().register(this, Command.builder()
-                .parameters(Parameter.builder().setKey(textKey).remainingRawJoinedStrings().build())
+                .parameters(Parameter.remainingRawJoinedStrings().setKey(textKey).build())
                 .setShortDescription(Text.of("Repeats what you say to the command."))
                 .setExecutor((source, context) -> {
                     source.sendMessage(Text.of("Simon says: ", context.getOneUnchecked(textKey)));
@@ -71,7 +71,7 @@ public class StandardCommandsTest {
                 }).build(), "simonsays");
 
         Sponge.getCommandManager().register(this, Command.builder()
-                .parameters(Parameter.builder().setKey(textKey).choices("wisely", "poorly").build())
+                .parameters(Parameter.choices("wisely", "poorly").setKey(textKey).build())
                 .setShortDescription(Text.of("Repeats what you say to the command, from a choice of \"wisely\" and \"poorly\"."))
                 .setExecutor((source, context) -> {
                     source.sendMessage(Text.of("You chose ", context.getOneUnchecked(textKey)));
@@ -79,7 +79,7 @@ public class StandardCommandsTest {
                 }).build(), "choose");
 
         Sponge.getCommandManager().register(this, Command.builder()
-                .parameters(Parameter.builder().setKey(textKey).string().optional().build())
+                .parameters(Parameter.string().setKey(textKey).optional().build())
                 .setShortDescription(Text.of("Repeats the one word you say to the command, if you add that parameter."))
                 .setExecutor((source, context) -> {
                     source.sendMessage(Text.of("You chose ", context.<String>getOne(textKey).orElse("nothing")));
@@ -87,7 +87,7 @@ public class StandardCommandsTest {
                 }).build(), "chooseoptional");
 
         Sponge.getCommandManager().register(this, Command.builder()
-                .parameters(Parameter.builder().setKey(textKey).allOf().string().build())
+                .parameters(Parameter.string().setKey(textKey).allOf().build())
                 .setShortDescription(Text.of("Repeats the words you say to the command, one at a time."))
                 .setExecutor((source, context) -> {
                     context.getAll(textKey).forEach(x -> source.sendMessage(Text.of("You chose ", x)));
@@ -96,8 +96,8 @@ public class StandardCommandsTest {
 
         Sponge.getCommandManager().register(this, Command.builder()
                 .parameters(
-                        Parameter.builder().setKey(playerKey).playerOrSource().string().build(),
-                        Parameter.builder().setKey(textKey).allOf().string()
+                        Parameter.playerOrSource().setKey(playerKey).build(),
+                        Parameter.string().setKey(textKey).allOf()
                                 .setSuggestions(((source, args, context) -> Lists.newArrayList("spam", "bacon", "eggs")))
                                 .setUsage(((key, source) -> Text.of("Words to send")))
                                 .build()

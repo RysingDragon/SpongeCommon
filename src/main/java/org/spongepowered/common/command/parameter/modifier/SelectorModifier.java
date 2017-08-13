@@ -87,4 +87,16 @@ public class SelectorModifier implements ValueParameterModifier {
             parsingContext.next();
         }
     }
+
+    public Collection<Class<? extends Entity>> getEntityClasses() {
+        return entityClasses;
+    }
+
+    public boolean isOnlyOne() {
+        return onlyOne;
+    }
+
+    public boolean isStrict() {
+        return strict;
+    }
 }

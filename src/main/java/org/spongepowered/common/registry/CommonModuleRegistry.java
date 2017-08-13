@@ -42,8 +42,10 @@ import org.spongepowered.api.command.format.CommandMessageFormat;
 import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.command.parameter.flag.Flags;
 import org.spongepowered.api.command.parameter.flag.UnknownFlagBehavior;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameterModifier;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameterModifier;
+import org.spongepowered.api.command.parameter.managed.standard.VariableValueParameterModifiers;
+import org.spongepowered.api.command.parameter.managed.standard.VariableValueParameters;
 import org.spongepowered.api.command.parameter.token.InputTokenizer;
 import org.spongepowered.api.command.managed.ChildExceptionBehavior;
 import org.spongepowered.api.data.DataRegistration;
@@ -154,6 +156,14 @@ import org.spongepowered.common.command.parameter.SpongeParameterBuilder;
 import org.spongepowered.common.command.parameter.SpongeParameterFirstOfBuilder;
 import org.spongepowered.common.command.parameter.SpongeParameterSequenceBuilder;
 import org.spongepowered.common.command.parameter.flag.SpongeFlagsBuilder;
+import org.spongepowered.common.command.parameter.modifier.builder.SpongeDefaultValueModifierBuilder;
+import org.spongepowered.common.command.parameter.modifier.builder.SpongeRepeatedValueModifierBuilder;
+import org.spongepowered.common.command.parameter.modifier.builder.SpongeSelectorValueModifierBuilder;
+import org.spongepowered.common.command.parameter.value.builder.SpongeCatalogTypeValueParameterBuilder;
+import org.spongepowered.common.command.parameter.value.builder.SpongeDynamicChoicesValueParameterBuilder;
+import org.spongepowered.common.command.parameter.value.builder.SpongeEnumValueParameterBuilder;
+import org.spongepowered.common.command.parameter.value.builder.SpongeLiteralValueParameterBuilder;
+import org.spongepowered.common.command.parameter.value.builder.SpongeStaticChoicesValueParameterBuilder;
 import org.spongepowered.common.command.result.SpongeCommandResultBuilder;
 import org.spongepowered.common.command.managed.SpongeCommandBuilder;
 import org.spongepowered.common.data.SpongeDataRegistrationBuilder;
@@ -184,8 +194,6 @@ import org.spongepowered.common.item.recipe.crafting.SpongeShapelessCraftingReci
 import org.spongepowered.common.item.recipe.smelting.SpongeSmeltingRecipeBuilder;
 import org.spongepowered.common.registry.factory.ResourcePackFactoryModule;
 import org.spongepowered.common.registry.factory.TimingsFactoryModule;
-import org.spongepowered.common.registry.factory.ValueParameterFactoryModule;
-import org.spongepowered.common.registry.factory.ValueParameterModifierFactoryModule;
 import org.spongepowered.common.registry.type.*;
 import org.spongepowered.common.registry.type.block.*;
 import org.spongepowered.common.registry.type.boss.BossBarColorRegistryModule;
@@ -265,8 +273,6 @@ public final class CommonModuleRegistry {
         final List<FactoryRegistry<?, ?>> factoryRegistries = new ArrayList<>();
         factoryRegistries.add(new ResourcePackFactoryModule());
         factoryRegistries.add(new TimingsFactoryModule());
-        factoryRegistries.add(new ValueParameterFactoryModule());
-        factoryRegistries.add(new ValueParameterModifierFactoryModule());
 
         try {
             Field modifierField = Field.class.getDeclaredField("modifiers");
@@ -367,6 +373,14 @@ public final class CommonModuleRegistry {
             .registerBuilderSupplier(Flags.Builder.class, SpongeFlagsBuilder::new)
             .registerBuilderSupplier(CommandResult.Builder.class, SpongeCommandResultBuilder::new)
             .registerBuilderSupplier(Command.Builder.class, SpongeCommandBuilder::new)
+            .registerBuilderSupplier(VariableValueParameterModifiers.SelectorValueModifierBuilder.class, SpongeSelectorValueModifierBuilder::new)
+            .registerBuilderSupplier(VariableValueParameterModifiers.RepeatedValueModifierBuilder.class, SpongeRepeatedValueModifierBuilder::new)
+            .registerBuilderSupplier(VariableValueParameterModifiers.DefaultValueModifierBuilder.class, SpongeDefaultValueModifierBuilder::new)
+            .registerBuilderSupplier(VariableValueParameters.DynamicChoicesBuilder.class, SpongeDynamicChoicesValueParameterBuilder::new)
+            .registerBuilderSupplier(VariableValueParameters.StaticChoicesBuilder.class, SpongeStaticChoicesValueParameterBuilder::new)
+            .registerBuilderSupplier(VariableValueParameters.LiteralBuilder.class, SpongeLiteralValueParameterBuilder::new)
+            .registerBuilderSupplier(VariableValueParameters.CatalogedTypeBuilder.class, SpongeCatalogTypeValueParameterBuilder::new)
+            .registerBuilderSupplier(VariableValueParameters.EnumBuilder.class, SpongeEnumValueParameterBuilder::new)
         ;
     }
 

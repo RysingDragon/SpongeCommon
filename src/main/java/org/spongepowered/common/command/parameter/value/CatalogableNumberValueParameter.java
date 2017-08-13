@@ -28,7 +28,7 @@ import com.google.common.collect.Lists;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.ArgumentParseException;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 import org.spongepowered.api.command.parameter.token.CommandArgs;
 
 import java.util.List;

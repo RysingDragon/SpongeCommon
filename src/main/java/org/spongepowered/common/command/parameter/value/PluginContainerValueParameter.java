@@ -27,7 +27,7 @@ package org.spongepowered.common.command.parameter.value;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 import org.spongepowered.api.command.parameter.managed.impl.PatternMatchingValueParameter;
 
 import java.util.Optional;

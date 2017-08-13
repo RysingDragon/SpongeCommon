@@ -49,14 +49,14 @@ public class ParameterTest {
     public void testThatNoKeyFails() {
 
         // When given this parameter with no key, exception
-        Parameter.builder().string().build();
+        Parameter.string().build();
     }
 
     @Test
     public void testThatStandardParameterCanBeParsed() throws Exception {
 
         // With this parameter
-        Parameter parameter = Parameter.builder().setKey("test").string().build();
+        Parameter parameter = Parameter.string().setKey("test").build();
 
         // This tokenized args
         SpongeCommandArgs args = new SpongeCommandArgs(Lists.newArrayList(new SpongeSingleArg("test", 0, 4)), "test");
@@ -79,7 +79,7 @@ public class ParameterTest {
     public void testThatIntegerCanBeParsed() throws Exception {
 
         // With this parameter
-        Parameter parameter = Parameter.builder().setKey("test").integerNumber().build();
+        Parameter parameter = Parameter.integerNumber().setKey("test").build();
 
         // This tokenized args
         SpongeCommandArgs args = new SpongeCommandArgs(Lists.newArrayList(new SpongeSingleArg("1", 0, 1)), "1");
@@ -105,7 +105,7 @@ public class ParameterTest {
     public void testThatIntegerWillThrowIfTheInputIsntAnInteger() throws Exception {
 
         // With this parameter
-        Parameter parameter = Parameter.builder().setKey("test").integerNumber().build();
+        Parameter parameter = Parameter.integerNumber().setKey("test").build();
 
         // This tokenized args
         SpongeCommandArgs args = new SpongeCommandArgs(Lists.newArrayList(new SpongeSingleArg("a1", 0, 1)), "a1");
@@ -194,7 +194,7 @@ public class ParameterTest {
     public void testAllOf() throws Exception {
 
         // With this parameter
-        Parameter parameter = Parameter.builder().setKey("test").allOf().string().build();
+        Parameter parameter = Parameter.string().setKey("test").allOf().build();
 
         // This tokenized args
         SpongeCommandArgs args = new SpongeCommandArgs(Lists.newArrayList(
@@ -231,7 +231,7 @@ public class ParameterTest {
     public void testRepeat() throws Exception {
 
         // With this parameter
-        Parameter parameter = Parameter.builder().setKey("test").repeated(2).string().build();
+        Parameter parameter = Parameter.string().setKey("test").repeated(2).build();
 
         // This tokenized args
         SpongeCommandArgs args = new SpongeCommandArgs(Lists.newArrayList(
@@ -268,7 +268,7 @@ public class ParameterTest {
     public void testRepeatFailsIfThereAreNotEnoughEntries() throws Exception {
 
         // With this parameter
-        Parameter parameter = Parameter.builder().setKey("test").repeated(4).string().build();
+        Parameter parameter = Parameter.string().setKey("test").repeated(4).build();
 
         // This tokenized args
         SpongeCommandArgs args = new SpongeCommandArgs(Lists.newArrayList(
@@ -293,8 +293,8 @@ public class ParameterTest {
 
         // With this parameter
         Parameter parameter = Parameter.firstOf(
-                Parameter.builder().setKey("test").repeated(3).string().build(),
-                Parameter.builder().setKey("test2").string().build()
+                Parameter.string().setKey("test").repeated(3).build(),
+                Parameter.string().setKey("test2").build()
         );
 
         // This tokenized args
@@ -326,8 +326,8 @@ public class ParameterTest {
 
         // With this parameter
         Parameter parameter = Parameter.firstOf(
-                Parameter.builder().setKey("test").repeated(4).string().build(),
-                Parameter.builder().setKey("test2").string().build()
+                Parameter.string().setKey("test").repeated(4).build(),
+                Parameter.string().setKey("test2").build()
         );
 
         // This tokenized args
@@ -357,8 +357,8 @@ public class ParameterTest {
 
         // With this parameter
         Parameter parameter = Parameter.seq(
-                Parameter.builder().setKey("test").string().build(),
-                Parameter.builder().setKey("test2").string().build()
+                Parameter.string().setKey("test").build(),
+                Parameter.string().setKey("test2").build()
         );
 
         // This tokenized args
@@ -391,8 +391,8 @@ public class ParameterTest {
         // With this parameter
         Parameter parameter =
                 Parameter.seq(
-                        Parameter.builder().setKey("test").choices(choices).build(),
-                        Parameter.builder().setKey("test2").choices(choices).build()
+                        Parameter.choices(choices).setKey("test").build(),
+                        Parameter.choices(choices).setKey("test2").build()
         );
 
 
@@ -425,7 +425,7 @@ public class ParameterTest {
     public void testEnum() throws Exception {
 
         // With this parameter
-        Parameter parameter = Parameter.builder().setKey("test").enumValue(TestEnum.class).build();
+        Parameter parameter = Parameter.enumValue(TestEnum.class).setKey("test").build();
 
         // This tokenized args
         SpongeCommandArgs args = new SpongeCommandArgs(Lists.newArrayList(
@@ -463,7 +463,7 @@ public class ParameterTest {
     public void testRemainingJoinedStrings() throws Exception {
 
         // With this parameter
-        Parameter parameter = Parameter.builder().setKey("test").remainingJoinedStrings().build();
+        Parameter parameter = Parameter.remainingJoinedStrings().setKey("test").build();
 
         // This tokenized args
         SpongeCommandArgs args = new SpongeCommandArgs(Lists.newArrayList(new SpongeSingleArg("test test test2", 0, 4)),

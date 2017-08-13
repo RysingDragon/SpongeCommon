@@ -26,9 +26,10 @@ package org.spongepowered.common.registry.type.command;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameters;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameters;
 import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
 import org.spongepowered.api.registry.util.RegisterCatalog;
 import org.spongepowered.api.util.Tristate;
@@ -50,6 +51,7 @@ import org.spongepowered.common.command.parameter.value.Vector3dValueParameter;
 import org.spongepowered.common.command.parameter.value.WorldPropertiesValueParameter;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public class CatalogedValueParametersRegistryModule implements AdditionalCatalogRegistryModule<CatalogedValueParameter> {
 
@@ -77,28 +79,13 @@ public class CatalogedValueParametersRegistryModule implements AdditionalCatalog
 
     @Override
     public void registerDefaults() {
-        final Map<String, Boolean> booleanChoices = new HashMap<String, Boolean>() {{
-            put("true", true);
-            put("t", true);
-            put("yes", true);
-            put("y", true);
-            put("verymuchso", true);
-
-            put("false", false);
-            put("f", false);
-            put("no", false);
-            put("n", false);
-            put("notatall", false);
-        }};
-        this.parserModifierMappings.put("boolean", new CatalogableChoicesValueParameter("sponge:boolean", "Boolean", () -> booleanChoices,
-                Tristate.TRUE));
+        this.parserModifierMappings.put("boolean", CatalogableChoicesValueParameter.BOOLEAN);
 
         CatalogableCatalogTypeValueParameter<DimensionType> ccdt = new CatalogableCatalogTypeValueParameter<>(
                 "sponge:dimension_catalog_type",
                 "Dimension Catalog Type",
                 DimensionType.class,
-                "minecraft",
-                "sponge"
+                Lists.newArrayList("minecraft", "sponge")
         );
         this.parserModifierMappings.put("dimension", ccdt);
 
@@ -113,14 +100,10 @@ public class CatalogedValueParametersRegistryModule implements AdditionalCatalog
 
         this.parserModifierMappings.put("none", new NoneValueParameter());
 
-        this.parserModifierMappings.put("entity", new EntityValueParameter("sponge:entity", "Entity parameter", false));
-        this.parserModifierMappings.put("entity_or_source",
-                new EntityValueParameter("sponge:entity_or_source", "Entity or source parameter", true));
+        this.parserModifierMappings.put("entity", new EntityValueParameter("sponge:entity", "Entity parameter"));
 
-        PlayerValueParameter parameter = new PlayerValueParameter("sponge:player", "Player parameter", false);
+        PlayerValueParameter parameter = new PlayerValueParameter("sponge:player", "Player parameter");
         this.parserModifierMappings.put("player", parameter);
-        this.parserModifierMappings.put("player_or_source",
-                new PlayerValueParameter("sponge:player_or_source", "Player or source parameter", true));
 
         this.parserModifierMappings.put("plugin", new PluginContainerValueParameter());
 
@@ -129,9 +112,7 @@ public class CatalogedValueParametersRegistryModule implements AdditionalCatalog
 
         this.parserModifierMappings.put("string", new StringValueParameter());
 
-        this.parserModifierMappings.put("user", new UserValueParameter("sponge:user", "User parameter", parameter, false));
-        this.parserModifierMappings.put("user_or_source", new UserValueParameter("sponge:user_or_source", "User or source parameter", parameter,
-                false));
+        this.parserModifierMappings.put("user", new UserValueParameter("sponge:user", "User parameter", parameter));
 
         Vector3dValueParameter vector3dValueParameter = new Vector3dValueParameter();
         this.parserModifierMappings.put("vector3d", vector3dValueParameter);

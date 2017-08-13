@@ -25,32 +25,46 @@
 package org.spongepowered.common.command.parameter.modifier;
 
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.command.parameter.CommandContext;
-import org.spongepowered.api.command.parameter.ArgumentParseException;
-import org.spongepowered.api.command.parameter.managed.ParsingContext;
 import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameterModifier;
-import org.spongepowered.api.command.parameter.token.CommandArgs;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.player.Player;
 
-public class AllOfModifier implements CatalogedValueParameterModifier {
+import java.util.Optional;
+
+public class CatalogableOrSourceDefaultValueModifier extends DefaultValueModifier implements CatalogedValueParameterModifier {
+
+    public static final CatalogableOrSourceDefaultValueModifier OR_SOURCE =
+            new CatalogableOrSourceDefaultValueModifier("sponge:or_source", "Or Source", CommandSource.class);
+
+    public static final CatalogableOrSourceDefaultValueModifier OR_PLAYER_SOURCE =
+            new CatalogableOrSourceDefaultValueModifier("sponge:or_player_source", "Or Player Source", Player.class);
+
+    public static final CatalogableOrSourceDefaultValueModifier OR_ENTITY_SOURCE =
+            new CatalogableOrSourceDefaultValueModifier("sponge:or_entity_source", "Or Entity Source", Entity.class);
+
+    private final String id;
+    private final String name;
+
+    public CatalogableOrSourceDefaultValueModifier(String id, String name, Class<?> sourceType) {
+        super(source -> {
+            if (sourceType.isInstance(source)) {
+                return Optional.of(source);
+            }
+
+            return Optional.empty();
+        });
+        this.id = id;
+        this.name = name;
+    }
 
     @Override
     public String getId() {
-        return "sponge:all_of";
+        return this.id;
     }
 
     @Override
     public String getName() {
-        return "All Of";
-    }
-
-    @Override
-    public void onParse(Text key, CommandSource source, CommandArgs args, CommandContext context, ParsingContext parsingContext)
-            throws ArgumentParseException {
-        while (args.hasNext()) {
-            parsingContext.next();
-        }
-
+        return this.name;
     }
 
 }

@@ -25,7 +25,9 @@
 package org.spongepowered.common.command.parameter.value;
 
 import org.spongepowered.api.CatalogType;
-import org.spongepowered.api.command.parameter.managed.CatalogedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
+
+import java.util.Collection;
 
 public class CatalogableCatalogTypeValueParameter<T extends CatalogType> extends CatalogTypeValueParameter<T>
     implements CatalogedValueParameter {
@@ -33,7 +35,7 @@ public class CatalogableCatalogTypeValueParameter<T extends CatalogType> extends
     private final String id;
     private final String name;
 
-    public CatalogableCatalogTypeValueParameter(String id, String name, Class<T> catalogType, String... prefixes) {
+    public CatalogableCatalogTypeValueParameter(String id, String name, Class<T> catalogType, Collection<String> prefixes) {
         super(catalogType, prefixes);
         this.id = id;
         this.name = name;
