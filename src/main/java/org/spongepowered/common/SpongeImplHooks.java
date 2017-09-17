@@ -59,7 +59,7 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.MapStorage;
-import org.spongepowered.api.command.args.ChildCommandElementExecutor;
+import org.spongepowered.api.command.Command;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.crafting.CraftingGridInventory;
 import org.spongepowered.api.item.recipe.crafting.CraftingRecipe;
@@ -358,7 +358,7 @@ public final class SpongeImplHooks {
         return Text.EMPTY;
     }
 
-    public static void registerAdditionalCommands(ChildCommandElementExecutor flagChildren, ChildCommandElementExecutor nonFlagChildren) {
+    public static void registerAdditionalCommands(Command.Builder builder) {
         // Overwritten in SpongeForge
     }
 

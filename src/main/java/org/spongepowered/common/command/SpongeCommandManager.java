@@ -73,11 +73,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-<<<<<<< HEAD
-import java.util.function.Function;
 import java.util.regex.Pattern;
-=======
->>>>>>> Update with API, add message format catalog
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;

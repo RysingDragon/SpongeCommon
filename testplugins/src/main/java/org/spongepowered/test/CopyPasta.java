@@ -24,17 +24,15 @@
  */
 package org.spongepowered.test;
 
-import static org.spongepowered.api.command.args.GenericArguments.seq;
-import static org.spongepowered.api.command.args.GenericArguments.string;
-
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.persistence.DataFormats;
@@ -43,7 +41,6 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.item.ItemTypes;
@@ -92,10 +89,10 @@ public class CopyPasta {
         this.schematicsDir = new File(this.config, "schematics");
         this.schematicsDir.mkdirs();
         this.logger.info("Saving schematics to " + this.schematicsDir.getAbsolutePath());
-        Sponge.getCommandManager().register(this, CommandSpec.builder()
-            .description(Text.of("Copies a region of the world to your clipboard"))
-            .permission(PLUGIN_ID + ".command.copy")
-            .executor((src, args) -> {
+        Sponge.getCommandManager().register(this, Command.builder()
+            .setShortDescription(Text.of("Copies a region of the world to your clipboard"))
+            .setPermission(PLUGIN_ID + ".command.copy")
+            .setExecutor((src, args) -> {
                 if (!(src instanceof Player)) {
                     src.sendMessage(Text.of(TextColors.RED, "Player only."));
                     return CommandResult.success();
@@ -114,10 +111,10 @@ public class CopyPasta {
                 return CommandResult.success();
             })
             .build(), "copy");
-        Sponge.getCommandManager().register(this, CommandSpec.builder()
-            .description(Text.of("Pastes your clipboard at your current position"))
-            .permission(PLUGIN_ID + ".command.paste")
-            .executor((src, args) -> {
+        Sponge.getCommandManager().register(this, Command.builder()
+            .setShortDescription(Text.of("Pastes your clipboard at your current position"))
+            .setPermission(PLUGIN_ID + ".command.paste")
+            .setExecutor((src, args) -> {
                 if (!(src instanceof Player)) {
                     src.sendMessage(Text.of(TextColors.RED, "Player only."));
                     return CommandResult.success();
@@ -136,17 +133,18 @@ public class CopyPasta {
                 return CommandResult.success();
             })
             .build(), "paste");
-        Sponge.getCommandManager().register(this, CommandSpec.builder()
-            .description(Text.of("Saves your clipboard to disk"))
-            .permission(PLUGIN_ID + ".command.save")
-            .arguments(seq(string(Text.of("format")), string(Text.of("name"))))
-            .executor((src, args) -> {
+        Sponge.getCommandManager().register(this, Command.builder()
+            .setShortDescription(Text.of("Saves your clipboard to disk"))
+            .setPermission(PLUGIN_ID + ".command.save")
+            .parameter(Parameter.string().setKey("format").build())
+            .parameter(Parameter.string().setKey("name").build())
+            .setExecutor((src, args) -> {
                 if (!(src instanceof Player)) {
                     src.sendMessage(Text.of(TextColors.RED, "Player only."));
                     return CommandResult.success();
                 }
-                String format = args.getOne("format").get().toString();
-                String name = args.getOne("name").get().toString();
+                String format = args.getOneUnchecked("format").toString();
+                String name = args.getOneUnchecked("name").toString();
                 Player player = (Player) src;
                 PlayerData data = get(player);
                 ArchetypeVolume volume = data.getClipboard();
@@ -182,17 +180,18 @@ public class CopyPasta {
                 return CommandResult.success();
             })
             .build(), "save");
-        Sponge.getCommandManager().register(this, CommandSpec.builder()
-            .description(Text.of("Loads a schematic from disk to your clipboard"))
-            .permission(PLUGIN_ID + ".command.load")
-            .arguments(seq(string(Text.of("format")), string(Text.of("name"))))
-            .executor((src, args) -> {
+        Sponge.getCommandManager().register(this, Command.builder()
+            .setShortDescription(Text.of("Loads a schematic from disk to your clipboard"))
+            .setPermission(PLUGIN_ID + ".command.load")
+            .parameter(Parameter.string().setKey("format").build())
+            .parameter(Parameter.string().setKey("name").build())
+            .setExecutor((src, args) -> {
                 if (!(src instanceof Player)) {
                     src.sendMessage(Text.of(TextColors.RED, "Player only."));
                     return CommandResult.success();
                 }
-                String format = args.getOne("format").get().toString();
-                String name = args.getOne("name").get().toString();
+                String format = args.getOneUnchecked("format").toString();
+                String name = args.getOneUnchecked("name").toString();
                 Player player = (Player) src;
                 PlayerData data = get(player);
                 if (!"legacy".equalsIgnoreCase(format) && !"sponge".equalsIgnoreCase(format)) {

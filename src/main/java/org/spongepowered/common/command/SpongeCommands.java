@@ -120,20 +120,20 @@ public class SpongeCommands {
      * @return The newly created command
      */
     public static Command createSpongeCommand() {
-        return Command.builder()
-                .child(getVersionCommand(), "version")
-                .child(getBlockInfoCommand(), "blockInfo")
-                .child(getEntityInfoCommand(), "entityInfo")
-                .child(getAuditCommand(), "audit")
-                .child(getHeapCommand(), "heap")
-                .child(getPluginsCommand(), "plugins")
-                .child(getTimingsCommand(), "timings")
-                .child(getWhichCommand(), "which")
-                .child(getChunksCommand(), "chunks")
-                .child(getConfigCommand(), "config")
-                .child(getReloadCommand(), "reload") // TODO: Should these two be subcommands of config, and what is now config be set?
-                .child(getSaveCommand(), "save")
-                .child(getTpsCommand(), "tps")
+        Command.Builder commandBuilder = Command.builder()
+                .child(createSpongeVersionCommand(), "version")
+                .child(createSpongeBlockInfoCommand(), "blockInfo")
+                .child(createSpongeEntityInfoCommand(), "entityInfo")
+                .child(createSpongeAuditCommand(), "audit")
+                .child(createSpongeHeapCommand(), "heap")
+                .child(createSpongePluginsCommand(), "plugins")
+                .child(createSpongeTimingsCommand(), "timings")
+                .child(createSpongeWhichCommand(), "which")
+                .child(createSpongeChunksCommand(), "chunks")
+                .child(createSpongeConfigCommand(), "config")
+                .child(createSpongeReloadCommand(), "reload") // TODO: Should these two be subcommands of config, and what is now config be set?
+                .child(createSpongeSaveCommand(), "save")
+                .child(createSpongeTpsCommand(), "tps")
                 .setShortDescription(Text.of("General Sponge command"))
                 .setExtendedDescription(Text.of("commands:\n", // TODO: Automatically generate from child executors (wait for help system on this)
                         INDENT, title("chunks"), LONG_INDENT, "Prints chunk data for a specific dimension or world(s)\n",
@@ -146,16 +146,10 @@ public class SpongeCommands {
                         INDENT, title("plugins"), LONG_INDENT, "List currently installed plugins\n",
                         INDENT, title("which"), LONG_INDENT, "List plugins that own a specific command\n",
                         INDENT, title("tps"), LONG_INDENT, "Provides TPS (ticks per second) data for loaded worlds\n",
-                        SpongeImplHooks.getAdditionalCommandDescriptions()))
-                .build();
+                        SpongeImplHooks.getAdditionalCommandDescriptions()));
 
-        /* Left over from rebase - will resolve after
-                        .arguments(firstParsing(nonFlagChildren, flags()
-                .flag("-global", "g")
-                .valueFlag(world(Text.of("world")), "-world", "w")
-                .valueFlag(dimension(Text.of("dimension")), "-dimension", "d")
-                .buildWith(flagChildren)))
-                .executor(nonFlagChildren) */
+        SpongeImplHooks.registerAdditionalCommands(commandBuilder);
+        return commandBuilder.build();
     }
 
 
@@ -353,37 +347,6 @@ public class SpongeCommands {
                 })
                 .build();
     }
-
-
-    private static Command getTpsCommand() {
-        return Command.builder()
-                .setFlags(FLAGS)
-                .setPermission("sponge.command.tps")
-                .setShortDescription(Text.of("Provides TPS (ticks per second) data for loaded worlds."))
-                .parameters(Parameter.worldProperties().optional().setKey("world").build())
-                .setExecutor((src, args) -> {
-                    if (args.hasAny("world")) {
-                        for (WorldProperties properties : args.<WorldProperties>getAll("world")) {
-                            final Optional<World> optWorld = Sponge.getServer().getWorld(properties.getWorldName());
-                            if (!optWorld.isPresent()) {
-                                src.sendMessage(Text.of(properties.getWorldName() + " has no TPS as it is offline!"));
-                            } else {
-                                printWorldTickTime(src, optWorld.get());
-                            }
-                        }
-                    } else {
-                        Sponge.getServer().getWorlds().forEach(world -> printWorldTickTime(src, world));
-                    }
-                    final double serverMeanTickTime = mean(SpongeImpl.getServer().tickTimeArray) * 1.0e-6d;
-                    src.sendMessage(Text.of("Overall TPS: ", TextColors.LIGHT_PURPLE,
-                            THREE_DECIMAL_DIGITS_FORMATTER.format(Math.min(1000.0 / (serverMeanTickTime), 20)),
-                            TextColors.RESET, ", Mean: ", TextColors.RED, THREE_DECIMAL_DIGITS_FORMATTER.
-                                    format(serverMeanTickTime), "ms"));
-                    return CommandResult.success();
-                })
-                .build();
-    }
-
 
     // Non-flag children
 
@@ -719,12 +682,12 @@ public class SpongeCommands {
                 .build();
     }
 
-    private static CommandSpec createSpongeTpsCommand() {
-        return CommandSpec.builder()
-                .permission("sponge.command.tps")
-                .description(Text.of("Provides TPS (ticks per second) data for loaded worlds."))
-                .arguments(optional(world(Text.of("world"))))
-                .executor((src, args) -> {
+    private static Command createSpongeTpsCommand() {
+        return Command.builder()
+                .setPermission("sponge.command.tps")
+                .setShortDescription(Text.of("Provides TPS (ticks per second) data for loaded worlds."))
+                .parameters(Parameter.worldProperties().setKey("world").optional().build())
+                .setExecutor((src, args) -> {
                     if (args.hasAny("world")) {
                         for (WorldProperties properties : args.<WorldProperties>getAll("world")) {
                             final Optional<World> optWorld = Sponge.getServer().getWorld(properties.getWorldName());
@@ -772,26 +735,26 @@ public class SpongeCommands {
     }
 
     // Not registered under the 'sponge' alias but kept here for consistency
-    public static CommandSpec createHelpCommand() {
-        return CommandSpec
+    public static Command createHelpCommand() {
+        return Command
             .builder()
-            .permission("sponge.command.help")
-            .arguments(optional(string(Text.of("command"))))
-            .description(Text.of("View a list of all commands."))
-            .extendedDescription(
+            .setPermission("sponge.command.help")
+            .parameters(Parameter.string().setKey("command").optional().build())
+            .setShortDescription(Text.of("View a list of all commands."))
+            .setExtendedDescription(
                     Text.of("View a list of all commands. Hover over\n" + " a command to view its description. Click\n"
                             + " a command to insert it into your chat bar."))
-            .executor((src, args) -> {
+            .setExecutor((src, args) -> {
                 Optional<String> command = args.getOne("command");
                 if (command.isPresent()) {
                     Optional<? extends CommandMapping> mapping = SpongeImpl.getGame().getCommandManager().get(command.get(), src);
                     if (mapping.isPresent()) {
-                        CommandCallable callable = mapping.get().getCallable();
-                        Optional<? extends Text> desc = callable.getHelp(src);
+                        Command targetCommand = mapping.get().getCommand();
+                        Optional<? extends Text> desc = targetCommand.getHelp(src);
                         if (desc.isPresent()) {
                             src.sendMessage(desc.get());
                         } else {
-                            src.sendMessage(Text.of("Usage: /", command.get(), callable.getUsage(src)));
+                            src.sendMessage(Text.of("Usage: /", command.get(), targetCommand.getUsage(src)));
                         }
                         return CommandResult.success();
                     }
@@ -803,7 +766,7 @@ public class SpongeCommands {
                 builder.padding(Text.of(TextColors.DARK_GREEN, "="));
 
                 TreeSet<CommandMapping> commands = new TreeSet<>(Comparator.comparing(CommandMapping::getPrimaryAlias));
-                commands.addAll(Collections2.filter(SpongeImpl.getGame().getCommandManager().getAll().values(), input -> input.getCallable()
+                commands.addAll(Collections2.filter(SpongeImpl.getGame().getCommandManager().getAll().values(), input -> input.getCommand()
                         .testPermission(src)));
                 builder.contents(ImmutableList.copyOf(Collections2.transform(commands, input -> getDescription(src, input))));
                 builder.sendTo(src);
@@ -812,13 +775,14 @@ public class SpongeCommands {
     }
 
     private static Text getDescription(CommandSource source, CommandMapping mapping) {
-        final Optional<Text> description = mapping.getCallable().getShortDescription(source);
+        final Optional<Text> description = mapping.getCommand().getShortDescription(source);
         Text.Builder text = Text.builder("/" + mapping.getPrimaryAlias());
         text.color(TextColors.GREEN);
         text.style(TextStyles.UNDERLINE);
         // End with a space, so tab completion works immediately.
         text.onClick(TextActions.suggestCommand("/" + mapping.getPrimaryAlias() + " "));
-        mapping.getCallable().getHelp(source).ifPresent(text1 -> text.onHover(TextActions.showText(text1)));
-        return Text.of(text, " ", description.orElse(mapping.getCallable().getUsage(source)));
+        mapping.getCommand().getHelp(source).ifPresent(text1 -> text.onHover(TextActions.showText(text1)));
+        return Text.of(text, " ", description.orElse(mapping.getCommand().getUsage(source)));
     }
+
 }
