@@ -551,27 +551,29 @@ public class SpongeCommonEventFactory {
         }
     }
 
-    public static InteractBlockEvent.Primary callInteractBlockEventPrimary(EntityPlayer player, EnumHand hand) {
+    public static InteractBlockEvent.Primary callInteractBlockEventPrimary(EntityPlayer player, EnumHand hand, @Nullable Vec3d hitVec) {
         InteractBlockEvent.Primary event;
         if (hand == EnumHand.MAIN_HAND) {
             event = SpongeEventFactory.createInteractBlockEventPrimaryMainHand(Sponge.getCauseStackManager().getCurrentCause(), HandTypes.MAIN_HAND,
-                    Optional.empty(), BlockSnapshot.NONE, Direction.NONE);
+                    Optional.ofNullable(hitVec == null ? null : VecHelper.toVector3d(hitVec)), BlockSnapshot.NONE, Direction.NONE);
         } else {
-            event = SpongeEventFactory.createInteractBlockEventPrimaryOffHand(Sponge.getCauseStackManager().getCurrentCause(), HandTypes.OFF_HAND, Optional.empty(), BlockSnapshot.NONE, Direction.NONE);
+            event = SpongeEventFactory.createInteractBlockEventPrimaryOffHand(Sponge.getCauseStackManager().getCurrentCause(), HandTypes.OFF_HAND,
+                    Optional.ofNullable(hitVec == null ? null : VecHelper.toVector3d(hitVec)), BlockSnapshot.NONE, Direction.NONE);
         }
         SpongeImpl.postEvent(event);
         return event;
     }
 
     public static InteractBlockEvent.Primary callInteractBlockEventPrimary(EntityPlayer player, BlockSnapshot blockSnapshot, EnumHand hand,
-            EnumFacing side) {
+            EnumFacing side, @Nullable Vec3d hitVec) {
         InteractBlockEvent.Primary event;
         Direction direction = DirectionFacingProvider.getInstance().getKey(side).get();
         if (hand == EnumHand.MAIN_HAND) {
             event = SpongeEventFactory.createInteractBlockEventPrimaryMainHand(Sponge.getCauseStackManager().getCurrentCause(), HandTypes.MAIN_HAND,
-                    Optional.empty(), blockSnapshot, direction);
+                    Optional.ofNullable(hitVec == null ? null : VecHelper.toVector3d(hitVec)), blockSnapshot, direction);
         } else {
-            event = SpongeEventFactory.createInteractBlockEventPrimaryOffHand(Sponge.getCauseStackManager().getCurrentCause(), HandTypes.OFF_HAND, Optional.empty(), blockSnapshot, direction);
+            event = SpongeEventFactory.createInteractBlockEventPrimaryOffHand(Sponge.getCauseStackManager().getCurrentCause(), HandTypes.OFF_HAND,
+                    Optional.ofNullable(hitVec == null ? null : VecHelper.toVector3d(hitVec)), blockSnapshot, direction);
         }
         SpongeImpl.postEvent(event);
         return event;

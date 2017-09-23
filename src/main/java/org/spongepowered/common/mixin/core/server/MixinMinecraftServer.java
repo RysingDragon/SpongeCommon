@@ -660,7 +660,9 @@ public abstract class MixinMinecraftServer implements Server, ConsoleSource, IMi
 
                 Sponge.getCauseStackManager().pushCause(player); 
                 if (player.getHeldItemMainhand() != null) {
-                    if (SpongeCommonEventFactory.callInteractItemEventPrimary(player, player.getHeldItemMainhand(), EnumHand.MAIN_HAND, Optional.empty(), blockSnapshot).isCancelled()) {
+                    if (SpongeCommonEventFactory.callInteractItemEventPrimary(player, player.getHeldItemMainhand(), EnumHand.MAIN_HAND,
+                            rayTraceResult.hitVec == null ? Optional.empty() : Optional.of(VecHelper.toVector3d(rayTraceResult.hitVec)), blockSnapshot)
+                            .isCancelled()) {
                         SpongeCommonEventFactory.lastAnimationPacketTick = 0;
                         Sponge.getCauseStackManager().popCause();
                         return;
@@ -668,9 +670,9 @@ public abstract class MixinMinecraftServer implements Server, ConsoleSource, IMi
                 }
 
                 if (side != null) {
-                    SpongeCommonEventFactory.callInteractBlockEventPrimary(player, blockSnapshot, EnumHand.MAIN_HAND, side);
+                    SpongeCommonEventFactory.callInteractBlockEventPrimary(player, blockSnapshot, EnumHand.MAIN_HAND, side, rayTraceResult.hitVec);
                 } else {
-                    SpongeCommonEventFactory.callInteractBlockEventPrimary(player, EnumHand.MAIN_HAND);
+                    SpongeCommonEventFactory.callInteractBlockEventPrimary(player, EnumHand.MAIN_HAND, rayTraceResult.hitVec);
                 }
                 Sponge.getCauseStackManager().popCause();
             }
